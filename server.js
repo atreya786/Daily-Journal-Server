@@ -13,7 +13,7 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
-app.use("/api/journal", journalRoutes);
+app.use("/api/journals", journalRoutes);
 app.use("/api/todos", todoRoutes);
 
 // Database connection

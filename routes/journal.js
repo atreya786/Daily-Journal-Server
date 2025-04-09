@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const JournalEntry = require("../models/JournalEntry");
-const { model } = require("mongoose");
 
 router.get("/", async (req, res) => {
   const journals = await JournalEntry.find().sort("date");
@@ -9,25 +8,28 @@ router.get("/", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
-  const journal = new JournalEntry(req.body);
-  const saved = await journal.save();
-  res.status(201).json(saved);
+  try {
+    const journal = new JournalEntry(req.body);
+    const saved = await journal.save();
+    res.status(201).json(saved);
+  } catch (err) {
+    console.error("Error saving journal:", err);
+    res.status(400).json({ error: "Failed to save journal" });
+  }
 });
 
 router.patch("/:id", async (req, res) => {
-  const updated = await JournalEntry.findByIdAndUpdate(
-    req.params.id,
-    req.body,
-    {
-      new: true,
-    }
-  );
-  res.json(updated);
-});
-
-router.delete("/:id", async (req, res) => {
-  await JournalEntry.findByIdAndDelete(req.params.id);
-  res.status(204).end();
+  try {
+    const updated = await JournalEntry.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    );
+    res.json(updated);
+  } catch (err) {
+    console.error("Error updating journal:", err);
+    res.status(500).json({ error: "Failed to update journal" });
+  }
 });
 
 module.exports = router;
